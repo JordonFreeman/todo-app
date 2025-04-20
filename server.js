@@ -56,6 +56,16 @@ app.put('/api/tasks/:id', (req, res) => {
     });
 });
 
+app.get('/api/admin/db', (req, res) => {
+    db.all('SELECT * FROM tasks', [], (err, rows) => {
+      if (err) return res.status(500).json({ error: err.message });
+      res.json({
+        tasks: rows,
+        timestamp: new Date().toISOString()
+      });
+    });
+  });
+
 // Default route to return index.html
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'index.html'));
