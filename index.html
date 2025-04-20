@@ -121,14 +121,23 @@
                     li.textContent = task.text;
                     if (task.completed) li.classList.add('checked');
                     addCloseButton(li, task.id);
-                    li.onclick = async () => {
+                    li.onclick = async (event) => {
+                        // Prevent the event from triggering for the close button
+                        if (event.target !== li) return;
+                        
                         try {
                             const response = await fetch(`/api/tasks/${task.id}`, { method: 'PUT' });
                             if (!response.ok) {
                                 throw new Error(`HTTP error! Status: ${response.status}`);
                             }
                             const updatedTask = await response.json();
-                            li.classList.toggle('checked', updatedTask.completed);
+                            
+                            // This is the fix - explicitly set the class based on completed status
+                            if (updatedTask.completed) {
+                                li.classList.add('checked');
+                            } else {
+                                li.classList.remove('checked');
+                            }
                         } catch (error) {
                             console.error('Error updating task:', error);
                             alert('Failed to update task. Please check the console for details.');
